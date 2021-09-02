@@ -27,7 +27,8 @@ end
 X = [psth(:,:,1) ; psth(:,:,2)];
 
 % SVD
-[U,S,V] = svd(X-mean(X)); 
+% [U,S,V] = svd(X-mean(X)); 
+V = myPCA(X - mean(X));
 responsemode = V(:,1); % S returned in decreasing order
 
 end % responseMode
