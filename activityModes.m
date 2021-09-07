@@ -61,7 +61,7 @@ params.modecondition(5) = {['hit&autowater.nums==' aw '&stim.num==' stim '&~earl
 
 %% SET METADATA
 % experiment meta data
-meta.datapth = fullfile(pth,'data');
+meta.datapth = fullfile('C:\Code','data');
 meta.anm = 'JEB7';
 meta.date = '2021-04-29';
 meta.datafn = findDataFn(meta);

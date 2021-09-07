@@ -12,6 +12,7 @@ use = meanFRs > params.lowFR;
 % remove low fr clusters
 meta.cluid = meta.cluid(use);
 obj.psth = obj.psth(:,use,:);
+obj.trialpsth = obj.trialpsth(:,use,:);
 
 end % removeLowFRClusters
 
