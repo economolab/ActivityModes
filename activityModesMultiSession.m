@@ -60,49 +60,50 @@ params.modecondition(4) = {['L&miss&autowater.nums==' aw '&stim.num==' stim '&~e
 params.modecondition(5) = {['hit&autowater.nums==' aw '&stim.num==' stim '&~early']};
 
 %% SET METADATA
-% experiment meta data
-meta.datapth = fullfile('C:\Code','data');
-meta.anm = 'JEB7';
-meta.date = '2021-04-29';
-meta.datafn = findDataFn(meta);
-
-meta.probe = 1;
-
+meta(1).datapth = fullfile('C:\Code','data');
+meta(1).anm = 'JEB7';
+meta(1).date = '2021-04-29';
+meta(1).datafn = findDataFn(meta(1));
+meta(1).probe = 1;
 % analysis meta data
-meta.tmin = -3; % (s) relative to params.evName
-meta.tmax = 3;  % (s) relative to params.evName
-meta.dt = 0.005;
-
-meta.smooth = 15; % smooth psth
-
+meta(1).tmin = -3; % (s) relative to params.alignEvent
+meta(1).tmax = 3;  % (s) relative to params.alignEvent
+meta(1).dt = 0.005;
+meta(1).smooth = 15; % smooth psth
 % clusters (these qualities are included)
-meta.quality = {'Fair','Good','Great','Excellent','single','multi'}; 
+meta(1).quality = {'Fair','Good','Great','Excellent','single','multi'}; 
 
-%% LOAD DATA
-dat = load(fullfile(meta.datapth, meta.datafn));
-obj = dat.obj;
+meta(2) = meta(1); % use most of the same fields
+meta(2).datapth = 'Y:\JEB\Experiments\JEB7\Analysis\2021-04-18';
+meta(2).anm = 'JEB7';
+meta(2).date = '2021-04-18';
+meta(2).datafn = findDataFn(meta(2));
 
-obj.condition = params.condition;
 
-%% get trials and clusters to use
-meta.trialid = findTrials(obj, obj.condition);
+%% PREPROCESS DATA
+objs = loadObjs(meta);
 
-cluQuality = {obj.clu{meta.probe}(:).quality}';
-meta.cluid = findClusters(cluQuality, meta.quality);
-
-%% align data
-obj = alignSpikes(obj,meta,params);
-
-%% get trial avg psth and single trial data
-obj = getSeq(obj,meta);
-
-%% remove low fr clusters
-[obj, meta] = removeLowFRClusters(obj,meta,params);
+%% PREPROCESS DATA
+for i = 1:numel(meta)
+    obj = objs{i};
+    obj.condition = params.condition;
+    % get trials and clusters to use
+    meta(i).trialid = findTrials(obj, obj.condition);
+    cluQuality = {obj.clu{meta(i).probe}(:).quality}';
+    meta(i).cluid = findClusters(cluQuality, meta(i).quality);
+    % align data
+    obj = alignSpikes(obj,meta(i),params);
+    % get trial avg psth and single trial data
+    obj = getSeq(obj,meta(i));
+    % remove low fr clusters
+    [obj, meta(i)] = removeLowFRClusters(obj,meta(i),params);
+    objs{i} = obj;
+end
 
 %% ACTIVITY MODES
-rez.time = obj.time;
-rez.psth = obj.psth;
-rez.condition = obj.condition;
+rez.time = objs{1}.time;
+rez.psth = concatPSTH(objs);
+rez.condition = objs{1}.condition;
 rez.alignEvent = params.alignEvent;
 
 %% stimulus mode
@@ -111,7 +112,7 @@ cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
 epoch = 'sample';
-rez.stimulus_mode = stimulusMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.stimulus_mode = stimulusModeMulti(objs,meta,cond,epoch,rez.alignEvent);
 clear cond
 
 %% choice mode
@@ -120,14 +121,14 @@ cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
 epoch = 'delay';
-rez.choice_mode = choiceMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.choice_mode = choiceModeMulti(objs,meta,cond,epoch,rez.alignEvent);
 clear cond
 
 %% action mode
 cond{1} = params.modecondition{1};
 cond{2} = params.modecondition{2};
 epoch = 'action';
-rez.action_mode = actionMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.action_mode = actionModeMulti(objs,meta,cond,epoch,rez.alignEvent);
 clear cond
 
 %% outcome mode
@@ -136,19 +137,19 @@ cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
 epoch = 'outcome';
-rez.outcome_mode = outcomeMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.outcome_mode = outcomeModeMulti(objs,meta,cond,epoch,rez.alignEvent);
 clear cond
 
 %% ramping mode
 cond{1} = params.modecondition{5};
 epoch = {'presample','delay'};
-rez.ramping_mode = rampingMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.ramping_mode = rampingModeMulti(objs,meta,cond,epoch,rez.alignEvent);
 clear cond
 
 %% go mode
 cond{1} = params.modecondition{5};
 epoch = {'postgo','prego'};
-rez.go_mode = goMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.go_mode = goModeMulti(objs,meta,cond,epoch,rez.alignEvent);
 clear cond
 
 %% response mode 
@@ -156,13 +157,13 @@ cond{1} = params.modecondition{1};
 cond{2} = params.modecondition{2};
 psthcond = [1,2];
 epoch = 'presample'; % used to estimate baseline firing rate
-rez.response_mode = responseMode(obj,meta,cond,epoch,rez.alignEvent,psthcond);
+rez.response_mode = responseModeMulti(objs,meta,cond,epoch,rez.alignEvent,rez.psth,psthcond);
 clear cond
 
 %% orthogonalize
 
 [fns,~] = patternMatchCellArray(fieldnames(rez),{'mode'},'all');
-modes = zeros(numel(meta.cluid),numel(fns));
+modes = zeros(size(rez.psth,2),numel(fns));
 for i = 1:numel(fns)
     modes(:,i) = rez.(fns{i});
 end
@@ -175,7 +176,7 @@ end
 
 %% PLOTS
 
-% MODES VIZ
+% LATENTS VIZ
 
 % plot correct trials alone
 plt.title = 'Correct Trials';
@@ -221,16 +222,31 @@ plotAllModes(rez, obj.bp.ev, params.alignEvent, plt)
 % dotProductModes(rez,orthModes,'ORTHOGONALIZED')
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function fn = findDataFn(meta)
+function objfn = findDataFn(meta)
 contents = dir(meta.datapth);
 contents = {contents.name}';
 
 strToFind = {'data_structure' , meta.anm, meta.date};
 
 [fn,~] = patternMatchCellArray(contents, strToFind, 'all');
-fn = fn{1};
+objfn = fn{1};
 
 end % loadRawDataObj
+
+function objs = loadObjs(meta)
+objs = cell(1,numel(meta));
+for i = 1:numel(meta)
+    dat = load(fullfile(meta(i).datapth, meta(i).datafn));
+    objs{i} = dat.obj;
+end
+end % loadObjs
+
+function psth = concatPSTH(objs)
+psth = objs{1}.psth;
+for i = 2:numel(objs)
+    psth = cat(2,psth,objs{i}.psth);
+end
+end % concatPSTH
 
 
 

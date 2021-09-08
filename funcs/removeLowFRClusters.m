@@ -10,10 +10,9 @@ meanFRs = mean(mean(obj.psth,3));
 use = meanFRs > params.lowFR;
 
 % remove low fr clusters
-meta.cluNum = meta.cluNum(use);
+meta.cluid = meta.cluid(use);
 obj.psth = obj.psth(:,use,:);
 obj.trialpsth = obj.trialpsth(:,use,:);
-obj.trialcounts = obj.trialcounts(:,use,:);
 
 end % removeLowFRClusters
 

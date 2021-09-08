@@ -1,6 +1,6 @@
 function outcomemode = outcomeMode(obj,meta,cond,epoch,alignEvent)
 % outcome mode: defined during response epoch (0 to 1.3 s rel go cue)
-%       ((hitR - missL) + (missR - hitL)) / sqrt(sum(sd for each tt ^2));
+%       ((hitR - missR) + (hitL - missL)) / sqrt(sum(sd for each tt ^2));
 
 % which trials to use for each condition used for finding the mode
 trials = getTrialsForModeID(obj,cond);
@@ -15,7 +15,7 @@ epochMean = getEpochMean(obj,epochix,trials,meta);
 
 [mu,sd] = getEpochStats(epochMean,meta,trials);
 
-outcomemode = ((mu(:,1)-mu(:,4)) + (mu(:,3)-mu(:,2)))./ sqrt(sum(sd.^2,2));
+outcomemode = ((mu(:,1)-mu(:,3)) + (mu(:,2)-mu(:,4)))./ sqrt(sum(sd.^2,2));
 outcomemode(isnan(outcomemode)) = 0;
 outcomemode = outcomemode./sum(abs(outcomemode)); % (ncells,1)
 

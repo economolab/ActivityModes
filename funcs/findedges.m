@@ -4,11 +4,11 @@ function edges = findedges(time,bp,dt,epoch,trial,alignEvent)
     % lengths differ between trials
     switch epoch
         case 'presample'
-            e1 = bp.ev.sample(trial) - 0.5; 
+            e1 = bp.ev.sample(trial) - 0.3; 
             e2 = bp.ev.sample(trial) - 0.05;
         case 'sample'
             e1 = bp.ev.sample(trial);
-            e2 = bp.ev.delay(trial) - 0.1;
+            e2 = bp.ev.delay(trial) - 0.3;
         case 'delay'
             e1 = bp.ev.delay(trial);
             e2 = bp.ev.goCue(trial) - 0.05;
@@ -17,7 +17,7 @@ function edges = findedges(time,bp,dt,epoch,trial,alignEvent)
             e2 = bp.ev.goCue(trial); 
         case 'postgo'
             e1 = bp.ev.goCue(trial);
-            e2 = bp.ev.goCue(trial)+ 0.1; 
+            e2 = bp.ev.goCue(trial) + 0.1; 
         case 'outcome'
             e1 = bp.ev.goCue(trial);
             e2 = bp.ev.goCue(trial) + 1.3;

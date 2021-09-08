@@ -1,4 +1,4 @@
-function plotAllModes(rez,ev,alignEv,cols,plt)
+function plotAllModes(rez,ev,alignEv,plt)
 
 % get field names for each mode
 [fns,~] = patternMatchCellArray(fieldnames(rez),{'mode'},'all');
@@ -17,7 +17,7 @@ for i = 1:numel(fns)
     for j = 1:numel(plt.conditions)
         cond = plt.conditions(j);
         latent = mySmooth(psth(:,:,cond)*rez.(fns{i}),plt.smooth);
-        plot(rez.time,latent,'Color',cols{j},'LineWidth',plt.lw(j));
+        plot(rez.time,latent,'Color',plt.colors{j},'LineWidth',plt.lw(j));
     end
     xline(sample,'k--','LineWidth',0.5);
     xline(delay,'k--','LineWidth',0.5);
@@ -31,12 +31,12 @@ leg = legend(plt.legend);
 leg.Position = [0.60,0.066,0.28,0.13];
 sgtitle(plt.title)
 
-h=axes(fig,'visible','off');
-h.XLabel.Visible='on';
-h.YLabel.Visible='on';
-ylabel(h,'Activity (a.u.)');
-
-xlabel(h,['Time (s) from ' alignEv]);
+% h=axes(fig,'visible','off');
+% h.XLabel.Visible='on';
+% h.YLabel.Visible='on';
+% ylabel(h,'Activity (a.u.)');
+% 
+% xlabel(h,['Time (s) from ' alignEv]);
 
 end % plotAllModes
 
