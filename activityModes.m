@@ -6,8 +6,6 @@ elseif ismac
     pth = '/Users/Munib/Documents/Economo-Lab/code/activity_modes';
 end
 
-addpath(genpath(pwd))
-
 % find all 7 activity modes as described in :
 % Thalamus drives diverse responses in frontal cortex during decision-making
 % Weiguo Yang, Sri Laasya Tipparaju, Guang Chen, Nuo Li
@@ -37,7 +35,7 @@ addpath(genpath(pwd))
 % handle multiple probes
 
 %% SET RUN PARAMS
-params.alignEvent          = 'goCue'; % 'goCue' or 'moveOnset'
+params.alignEvent          = 'goCue'; % 'goCue' or 'firstLick'
 
 params.lowFR               = 1; % remove clusters firing less than this val
 
@@ -61,9 +59,9 @@ params.modecondition(5) = {['hit&autowater.nums==' aw '&stim.num==' stim '&~earl
 
 %% SET METADATA
 % experiment meta data
-meta.datapth = fullfile('C:\Code','data');
-meta.anm = 'JEB7';
-meta.date = '2021-04-29';
+meta.datapth = fullfile('C:\Users\Jackie\Documents\Grad School\Classes\Third Year\Neural Timeseries\Course Project');
+meta.anm = 'EKH3';
+meta.date = '2021-08-04';
 meta.datafn = findDataFn(meta);
 
 meta.probe = 1;
@@ -182,7 +180,7 @@ plt.title = 'Correct Trials';
 plt.legend = {'Right Hit','Left Hit'};
 plt.conditions = [1,2];
 plt.lw = [2 2];
-plt.smooth = 31;
+plt.smooth = 40;
 plt.colors = {[0 0 1],[1 0 0]};
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 
@@ -191,7 +189,7 @@ plt.title = 'Correct and Error Trials';
 plt.legend = {'Right Hit','Left Hit','Right Error', 'Left Error'};
 plt.conditions = [1,2,3,4];
 plt.lw = [2.5 2.5 1.5 1.5];
-plt.smooth = 31;
+plt.smooth = 40;
 plt.colors = {[0 0 1],[1 0 0], ...
                  [0.5 0.5 1],[1 0.5 0.5]};
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
@@ -201,7 +199,7 @@ plt.title = '2AFC and Autowater (Correct) Trials';
 plt.legend = {'Right 2AFC','Left 2AFC','Right AW', 'Left AW'};
 plt.conditions = [1,2,5,6];
 plt.lw = [2.5 2.5 1.5 1.5];
-plt.smooth = 31;
+plt.smooth = 40;
 plt.colors = {[0 0 1],[1 0 0], ...
                  [0.2 0.8 0.9],[0.9 0.5 0.2]};
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
@@ -211,7 +209,7 @@ plt.title = 'Correct and Ignore Trials';
 plt.legend = {'Right Hit','Left Hit','Ignore'};
 plt.conditions = [1,2,7];
 plt.lw = [2 2 2];
-plt.smooth = 31;
+plt.smooth = 40;
 plt.colors = {[0 0 1],[1 0 0],[0 0 0]};
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 

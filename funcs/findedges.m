@@ -34,7 +34,7 @@ function edges = findedges(time,bp,dt,epoch,trial,alignEvent)
    % define edges based on e1 and e2 for the current trial
    [~,e1ix] = min(abs(time - e1));
    [~,e2ix] = min(abs(time - e2));
-   edges = [e1ix e2ix]; 
+   edges = [e1ix e2ix];     
 %    edges = e1:dt:e2;
    
 end % findedges

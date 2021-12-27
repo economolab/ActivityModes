@@ -60,7 +60,7 @@ params.modecondition(4) = {['L&miss&autowater.nums==' aw '&stim.num==' stim '&~e
 params.modecondition(5) = {['hit&autowater.nums==' aw '&stim.num==' stim '&~early']};
 
 %% SET METADATA
-meta(1).datapth = fullfile('C:\Code','data');
+meta(1).datapth = fullfile('C:\Users\Jackie\Documents\Grad School\Economo Lab\Code');
 meta(1).anm = 'JEB7';
 meta(1).date = '2021-04-29';
 meta(1).datafn = findDataFn(meta(1));
@@ -74,9 +74,9 @@ meta(1).smooth = 15; % smooth psth
 meta(1).quality = {'Fair','Good','Great','Excellent','single','multi'}; 
 
 meta(2) = meta(1); % use most of the same fields
-meta(2).datapth = 'Y:\JEB\Experiments\JEB7\Analysis\2021-04-18';
-meta(2).anm = 'JEB7';
-meta(2).date = '2021-04-18';
+meta(2).datapth = 'C:\Users\Jackie\Documents\Grad School\Economo Lab\Code';
+meta(2).anm = 'EKH3';
+meta(2).date = '2021-08-04';
 meta(2).datafn = findDataFn(meta(2));
 
 
