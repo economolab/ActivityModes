@@ -61,7 +61,7 @@ params.modecondition(5) = {['hit&autowater.nums==' aw '&stim.num==' stim '&~earl
 
 %% SET METADATA
 % experiment meta data
-meta.datapth = fullfile('C:\Code','data');
+meta.datapth = fullfile('Y:\JEB\Experiments\JEB7\Analysis\2021-04-29');
 meta.anm = 'JEB7';
 meta.date = '2021-04-29';
 meta.datafn = findDataFn(meta);
@@ -69,14 +69,14 @@ meta.datafn = findDataFn(meta);
 meta.probe = 1;
 
 % analysis meta data
-meta.tmin = -3; % (s) relative to params.evName
-meta.tmax = 3;  % (s) relative to params.evName
-meta.dt = 0.005;
+meta.tmin = -2.5; % (s) relative to params.evName
+meta.tmax = 1.5;  % (s) relative to params.evName
+meta.dt = 1/200;
 
-meta.smooth = 15; % smooth psth
+meta.smooth = 30; % smooth psth
 
 % clusters (these qualities are included)
-meta.quality = {'Fair','Good','Great','Excellent','single','multi'}; 
+meta.quality = {'Poor','Fair','Good','Great','Excellent','single','multi'}; 
 
 %% LOAD DATA
 dat = load(fullfile(meta.datapth, meta.datafn));
@@ -104,6 +104,24 @@ rez.time = obj.time;
 rez.psth = obj.psth;
 rez.condition = obj.condition;
 rez.alignEvent = params.alignEvent;
+
+%% jaw mode
+
+load('movtrials')
+load('nonmovtrials')
+% 
+% fd1 = find(obj.time > -0.8, 1 ,'first');
+% fd2 = find(obj.time > -0.1, 1 ,'first');
+% 
+% fdpsth_jaw = obj.trialpsth(fd1:fd2,:,movtrials);
+% fdpsth_nojaw = obj.trialpsth(fd1:fd2,:,nonmovtrials);
+% 
+% mu(:,1) = nanmean(nanmean(fdpsth_jaw,3),1)';
+% mu(:,2) = nanmean(nanmean(fdpsth_nojaw,3),1)';
+% sd(:,1) = nanstd(nanmean(fdpsth_jaw,3),1)';
+% sd(:,2) = nanstd(nanmean(fdpsth_nojaw,3),1)';
+% 
+% rez.jaw_mode = (mu(:,1)-mu(:,2))./ sqrt(sum(sd.^2,2));
 
 %% stimulus mode
 cond{1} = params.modecondition{1};
@@ -158,6 +176,9 @@ psthcond = [1,2];
 epoch = 'presample'; % used to estimate baseline firing rate
 rez.response_mode = responseMode(obj,meta,cond,epoch,rez.alignEvent,psthcond);
 clear cond
+
+
+
 
 %% orthogonalize
 
@@ -214,6 +235,20 @@ plt.lw = [2 2 2];
 plt.smooth = 31;
 plt.colors = {[0 0 1],[1 0 0],[0 0 0]};
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
+
+% figure; 
+% psth_jaw = nanmean(obj.trialpsth(:,:,movtrials),3);
+% latent = mySmooth(psth_jaw*rez.jaw_mode,30);
+% plot(obj.time,latent,'Color','g','LineWidth',2); hold on
+% psth_nojaw = nanmean(obj.trialpsth(:,:,nonmovtrials),3);
+% latent = mySmooth(psth_nojaw*rez.jaw_mode,30);
+% plot(obj.time,latent,'Color','r','LineWidth',2); hold off
+% title('Jaw Mode')
+% legend('movement trials','non-movement trials')
+% ax = gca;
+% ax.FontSize = 20;
+
+
 
 
 % ORTHOGONALITY VIZ
