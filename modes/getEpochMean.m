@@ -10,14 +10,39 @@ for cluix = 1:numel(meta.cluid) % for each cluster
         cndtrid = find(trials.ix(:,cnd));
         for trix = 1:numel(cndtrid) % for every trial in cnd
             trid = cndtrid(trix);
-            e1 = epochix(trid,1);
-            e2 = epochix(trid,2);
             
-            psth(1:diff(epochix(trid,:))+1,cluix,trix,cnd) = ...
-                obj.trialpsth(e1:e2,cluix,trid);
-            
-            % calculate the avg firing rate during the epoch for trial
-            epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+            if isfield(obj,'earlyMoveix')
+                if ~ismember(trid,obj.earlyMoveix)
+                    e1 = epochix(trid,1);
+                    e2 = epochix(trid,2);
+                    
+                    psth(1:diff(epochix(trid,:))+1,cluix,trix,cnd) = ...
+                        obj.trialpsth(e1:e2,cluix,trid);
+                    
+                    % calculate the avg firing rate during the epoch for trial
+                    epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+                end
+            elseif isfield(obj,'earlyMoveTrial')
+                 if ~ismember(trid,obj.earlyMoveTrial)
+                    e1 = epochix(trid,1);
+                    e2 = epochix(trid,2);
+                    
+                    psth(1:diff(epochix(trid,:))+1,cluix,trix,cnd) = ...
+                        obj.trialpsth(e1:e2,cluix,trid);
+                    
+                    % calculate the avg firing rate during the epoch for trial
+                    epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+                 end
+            else
+                e1 = epochix(trid,1);
+                e2 = epochix(trid,2);
+                
+                psth(1:diff(epochix(trid,:))+1,cluix,trix,cnd) = ...
+                    obj.trialpsth(e1:e2,cluix,trid);
+                
+                % calculate the avg firing rate during the epoch for trial
+                epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+            end
         end
     end
 end
