@@ -6,15 +6,21 @@ sampmu = cell(numel(objs),1);
 delaymu = cell(numel(objs),1);
 sd = cell(numel(objs),1);
 for i = 1:numel(objs)
+    obj = objs{i};
     % which trials to use for each condition used for finding the mode
     trials = getTrialsForModeID(objs{i},cond);
+    if isfield(obj,'earlyMoveix')
+        trials.ix(obj.earlyMoveix,:) = 0;
+    elseif isfield(obj,'earlyMoveTrial')
+        trials.ix(obj.earlyMoveTrial,:) = 0;
+    end
     
     % find time in each trial corresponding to epoch
     sampepochix = nan(objs{i}.bp.Ntrials,2);
     delayepochix = nan(objs{i}.bp.Ntrials,2);
     for trix = 1:objs{i}.bp.Ntrials
-        sampepochix(trix,:)  = findedges(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{1},trix,alignEvent); % (idx1,idx2)
-        delayepochix(trix,:) = findedges(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{2},trix,alignEvent); % (idx1,idx2)
+        sampepochix(trix,:)  = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{1},trix,alignEvent); % (idx1,idx2)
+        delayepochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{2},trix,alignEvent); % (idx1,idx2)
     end
     
     sampEpochMean  = getEpochMean(objs{i},sampepochix,trials,meta(i));
@@ -31,6 +37,7 @@ sd = cell2mat(sd);
 
 rampingmode = (sampmu - delaymu) ./ sqrt(sum(sd.^2,2));
 rampingmode(isnan(rampingmode)) = 0;
+rampingmode(isinf(rampingmode)) = 0;
 rampingmode = rampingmode./sum(abs(rampingmode)); % (ncells,1)
 
 

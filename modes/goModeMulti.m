@@ -13,8 +13,8 @@ for i = 1:numel(objs)
     postepochix = nan(objs{i}.bp.Ntrials,2);
     preepochix = nan(objs{i}.bp.Ntrials,2);
     for trix = 1:objs{i}.bp.Ntrials
-        postepochix(trix,:)  = findedges(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{1},trix,alignEvent); % (idx1,idx2)
-        preepochix(trix,:)   = findedges(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{2},trix,alignEvent); % (idx1,idx2)
+        postepochix(trix,:)  = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{1},trix,alignEvent); % (idx1,idx2)
+        preepochix(trix,:)   = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{2},trix,alignEvent); % (idx1,idx2)
     end
     
     postEpochMean  = getEpochMean(objs{i},postepochix,trials,meta(i));
