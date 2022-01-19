@@ -5,12 +5,18 @@ function rampingmode = rampingMode(obj,meta,cond,epoch,alignEvent)
 % which trials to use for each condition used for finding the mode
 trials = getTrialsForModeID(obj,cond);
 
+if isfield(obj,'earlyMoveix')
+    trials.ix(obj.earlyMoveix,:) = 0;
+elseif isfield(obj,'earlyMoveTrial')
+    trials.ix(obj.earlyMoveTrial,:) = 0;
+end
+
 % find time in each trial corresponding to epoch
 sampepochix = nan(obj.bp.Ntrials,2);
 delayepochix = nan(obj.bp.Ntrials,2);
 for trix = 1:obj.bp.Ntrials
-    sampepochix(trix,:)  = findedges(obj.time,obj.bp,meta.dt,epoch{1},trix,alignEvent); % (idx1,idx2)
-    delayepochix(trix,:) = findedges(obj.time,obj.bp,meta.dt,epoch{2},trix,alignEvent); % (idx1,idx2)
+    sampepochix(trix,:)  = findedges_FirstLick(obj.time,obj.bp,epoch{1},trix,alignEvent); % (idx1,idx2)
+    delayepochix(trix,:) = findedges_FirstLick(obj.time,obj.bp,epoch{2},trix,alignEvent); % (idx1,idx2)
 end
 
 sampEpochMean  = getEpochMean(obj,sampepochix,trials,meta);

@@ -5,10 +5,16 @@ function choicemode = choiceMode(obj,meta,cond,epoch,alignEvent)
 % which trials to use for each condition used for finding the mode
 trials = getTrialsForModeID(obj,cond);
 
+if isfield(obj,'earlyMoveix')
+    trials.ix(obj.earlyMoveix,:) = 0;
+elseif isfield(obj,'earlyMoveTrial')
+    trials.ix(obj.earlyMoveTrial,:) = 0;
+end
+
 % find time in each trial corresponding to epoch
 epochix = nan(obj.bp.Ntrials,2);
 for trix = 1:obj.bp.Ntrials
-    epochix(trix,:) = findedges(obj.time,obj.bp,meta.dt,epoch,trix,alignEvent); % (idx1,idx2)
+    epochix(trix,:) = findedges_FirstLick(obj.time,obj.bp,epoch,trix,alignEvent); % (idx1,idx2)
 end
 
 epochMean = getEpochMean(obj,epochix,trials,meta);
