@@ -19,8 +19,8 @@ for i = 1:numel(objs)
     sampepochix = nan(objs{i}.bp.Ntrials,2);
     delayepochix = nan(objs{i}.bp.Ntrials,2);
     for trix = 1:objs{i}.bp.Ntrials
-        sampepochix(trix,:)  = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{1},trix,alignEvent); % (idx1,idx2)
-        delayepochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch{2},trix,alignEvent); % (idx1,idx2)
+        sampepochix(trix,:)  = findedges_FirstLick(objs{i}.time,objs{i}.bp,epoch{1},trix,alignEvent); % (idx1,idx2)
+        delayepochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,epoch{2},trix,alignEvent); % (idx1,idx2)
     end
     
     sampEpochMean  = getEpochMean(objs{i},sampepochix,trials,meta(i));

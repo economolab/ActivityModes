@@ -14,7 +14,7 @@ for i = 1:numel(objs)
     % find time in each trial corresponding to epoch
     epochix = nan(objs{i}.bp.Ntrials,2);
     for trix = 1:objs{i}.bp.Ntrials
-        epochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,meta(i).dt,epoch,trix,alignEvent); % (idx1,idx2)
+        epochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,epoch,trix,alignEvent); % (idx1,idx2)
     end
     
     epochMean = getEpochMean(objs{i},epochix,trials,meta(i));

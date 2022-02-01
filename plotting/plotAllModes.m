@@ -12,7 +12,7 @@ zeroEv  = 0; % corresponds to either gocue or moveonset
 % plot each mode
 fig = figure;
 for i = 1:numel(fns)
-    subplot(4,2,i);
+    subplot(5,2,i);
     hold on
     for j = 1:numel(plt.conditions)
         cond = plt.conditions(j);
