@@ -4,7 +4,7 @@ function edges = findedges(time,bp,dt,epoch,trial,alignEvent)
     % lengths differ between trials
     switch epoch
         case 'presample'
-            e1 = bp.ev.sample(trial) - 0.3; 
+            e1 = bp.ev.sample(trial) - 0.5; 
             e2 = bp.ev.sample(trial) - 0.05;
         case 'sample'
             e1 = bp.ev.sample(trial);

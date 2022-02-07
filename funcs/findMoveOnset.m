@@ -3,7 +3,7 @@ function obj = findMoveOnset(obj)
 
 [~,movTime] = getMoveIdx(obj);
 
-dt = mode(diff(obj.time));
+dt = 1/200;
 
 
 obj.bp.ev.moveOnset = nan(size(obj.bp.ev.goCue));

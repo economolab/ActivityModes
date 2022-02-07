@@ -42,13 +42,15 @@ params.alignEvent          = 'goCue'; % 'goCue' or 'moveOnset'
 params.lowFR               = 1; % remove clusters firing less than this val
 
 % set conditions to use for projections
-params.condition(1) = {'R&hit&~stim.enable&autowater.nums==2&~early'}; % right hits, no stim, aw off
-params.condition(2) = {'L&hit&~stim.enable&autowater.nums==2&~early'}; % left hits, no stim, aw off
-params.condition(3) = {'R&miss&~stim.enable&autowater.nums==2&~early'};   % error right, no stim, aw off
-params.condition(4) = {'L&miss&~stim.enable&autowater.nums==2&~early'};   % error left, no stim, aw off
-params.condition(5) = {'R&hit&~stim.enable&autowater.nums==1&~early'}; % right hits, no stim, aw on
-params.condition(6) = {'L&hit&~stim.enable&autowater.nums==1&~early'}; % left hits, no stim, aw on
-params.condition(7) = {'~hit&~miss&~stim.enable&autowater.nums==2&~early'}; % ignore
+params.condition(1) = {'R&hit&~stim.enable&~autowater&~early'}; % right hits, no stim, aw off
+params.condition(2) = {'L&hit&~stim.enable&~autowater&~early'}; % left hits, no stim, aw off
+params.condition(3) = {'R&miss&~stim.enable&~autowater&~early'};   % error right, no stim, aw off
+params.condition(4) = {'L&miss&~stim.enable&~autowater&~early'};   % error left, no stim, aw off
+params.condition(5) = {'R&hit&~stim.enable&autowater&~early'}; % right hits, no stim, aw on
+params.condition(6) = {'L&hit&~stim.enable&autowater&~early'}; % left hits, no stim, aw on
+params.condition(7) = {'~hit&~miss&~stim.enable&~autowater&~early'}; % ignore
+params.condition(8) = {'hit&~stim.enable&~autowater&~early'}; % hit 2afc
+params.condition(9) = {'hit&~stim.enable&autowater&~early'}; % hit aw
 
 % set conditions used for finding the modes
 aw = '2'; % 1-on, 2-off
@@ -59,69 +61,47 @@ params.modecondition(3) = {['R&miss&autowater.nums==' aw '&stim.num==' stim '&~e
 params.modecondition(4) = {['L&miss&autowater.nums==' aw '&stim.num==' stim '&~early']};
 params.modecondition(5) = {['hit&autowater.nums==' aw '&stim.num==' stim '&~early']};
 
+
+params.lowFR               = 1;      % when doing single trial analysis, remove clusters with avg firing rate < params.lowFR
+
+params.probe = 1;
+params.probeArea = 'ALM';
+
+params.tmin = -2.5;
+params.tmax = 1.5;
+params.dt = 1/200;
+
+params.smooth = 15;
+
+params.quality = {'all'};
+
 %% SET METADATA
 % experiment meta data
-meta.datapth = fullfile('Y:\JEB\Experiments\JEB7\Analysis\2021-04-29');
+meta.datapth = '/Volumes/MUNIB_SSD/Experiments';
 meta.anm = 'JEB7';
 meta.date = '2021-04-29';
-meta.datafn = findDataFn(meta);
-
-meta.probe = 1;
-
-% analysis meta data
-meta.tmin = -2.5; % (s) relative to params.evName
-meta.tmax = 1.5;  % (s) relative to params.evName
-meta.dt = 1/200;
-
-meta.smooth = 30; % smooth psth
-
-% clusters (these qualities are included)
-meta.quality = {'Poor','Fair','Good','Great','Excellent','single','multi'}; 
+% meta.datafn = findDataFn(meta);
+meta.datafn = 'data_structure_JEB7_2021-04-29.mat';
 
 %% LOAD DATA
-dat = load(fullfile(meta.datapth, meta.datafn));
-obj = dat.obj;
 
-obj.condition = params.condition;
+[meta,params,obj] = loadAndProcessData(meta,params);
 
-%% get trials and clusters to use
-meta.trialid = findTrials(obj, obj.condition);
-
-cluQuality = {obj.clu{meta.probe}(:).quality}';
-meta.cluid = findClusters(cluQuality, meta.quality);
-
-%% align data
-obj = alignSpikes(obj,meta,params);
-
-%% get trial avg psth and single trial data
-obj = getSeq(obj,meta);
-
-%% remove low fr clusters
-[obj, meta] = removeLowFRClusters(obj,meta,params);
+%% label move or non-move
+[obj.movix,obj.movtime] = getMoveIdx(obj,params);
 
 %% ACTIVITY MODES
 rez.time = obj.time;
 rez.psth = obj.psth;
-rez.condition = obj.condition;
+rez.condition = params.condition;
 rez.alignEvent = params.alignEvent;
 
-%% jaw mode
-
-load('movtrials')
-load('nonmovtrials')
-% 
-% fd1 = find(obj.time > -0.8, 1 ,'first');
-% fd2 = find(obj.time > -0.1, 1 ,'first');
-% 
-% fdpsth_jaw = obj.trialpsth(fd1:fd2,:,movtrials);
-% fdpsth_nojaw = obj.trialpsth(fd1:fd2,:,nonmovtrials);
-% 
-% mu(:,1) = nanmean(nanmean(fdpsth_jaw,3),1)';
-% mu(:,2) = nanmean(nanmean(fdpsth_nojaw,3),1)';
-% sd(:,1) = nanstd(nanmean(fdpsth_jaw,3),1)';
-% sd(:,2) = nanstd(nanmean(fdpsth_nojaw,3),1)';
-% 
-% rez.jaw_mode = (mu(:,1)-mu(:,2))./ sqrt(sum(sd.^2,2));
+%% context mode
+% hit2afc - hitaw during presample period
+cond{1} = params.condition{8}; % hit 2afc
+cond{2} = params.condition{9}; % hit aw
+rez.context_mode = (obj.presampleFR(:,8) - obj.presampleFR(:,9)) ./ sqrt(sum(obj.presampleSigma(:,8:9).^2,2));
+clear cond
 
 %% stimulus mode
 cond{1} = params.modecondition{1};
@@ -129,7 +109,7 @@ cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
 epoch = 'sample';
-rez.stimulus_mode = stimulusMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.stimulus_mode = stimulusMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
 %% choice mode
@@ -138,14 +118,14 @@ cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
 epoch = 'delay';
-rez.choice_mode = choiceMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.choice_mode = choiceMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
 %% action mode
 cond{1} = params.modecondition{1};
 cond{2} = params.modecondition{2};
 epoch = 'action';
-rez.action_mode = actionMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.action_mode = actionMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
 %% outcome mode
@@ -154,36 +134,34 @@ cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
 epoch = 'outcome';
-rez.outcome_mode = outcomeMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.outcome_mode = outcomeMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
 %% ramping mode
 cond{1} = params.modecondition{5};
 epoch = {'presample','delay'};
-rez.ramping_mode = rampingMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.ramping_mode = rampingMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
 %% go mode
 cond{1} = params.modecondition{5};
 epoch = {'postgo','prego'};
-rez.go_mode = goMode(obj,meta,cond,epoch,rez.alignEvent);
+rez.go_mode = goMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
 %% response mode 
-cond{1} = params.modecondition{1};
-cond{2} = params.modecondition{2};
-psthcond = [1,2];
-epoch = 'presample'; % used to estimate baseline firing rate
-rez.response_mode = responseMode(obj,meta,cond,epoch,rez.alignEvent,psthcond);
-clear cond
-
-
+% cond{1} = params.modecondition{1};
+% cond{2} = params.modecondition{2};
+% psthcond = [1,2];
+% epoch = 'presample'; % used to estimate baseline firing rate
+% rez.response_mode = responseMode(obj,params,cond,epoch,rez.alignEvent,psthcond);
+% clear cond
 
 
 %% orthogonalize
 
 [fns,~] = patternMatchCellArray(fieldnames(rez),{'mode'},'all');
-modes = zeros(numel(meta.cluid),numel(fns));
+modes = zeros(numel(params.cluid),numel(fns));
 for i = 1:numel(fns)
     modes(:,i) = rez.(fns{i});
 end
@@ -194,47 +172,64 @@ for i = 1:numel(fns)
     rez.(fns{i}) = orthModes(:,i);
 end
 
+%% remainder mode
+modesToKeep = eye(size(obj.psth,2)) - (orthModes*orthModes');
+
+residualpsth = nan(size(obj.psth));
+for i = 1:size(obj.psth,3)
+    residualpsth(:,:,i) = obj.psth(:,:,i) * modesToKeep;
+end
+
+X = [residualpsth(:,:,1) ; residualpsth(:,:,2)]; % left and right 2afc
+
+% SVD
+V = myPCA(X - mean(X));
+rez.remainder1_mode = V(:,1); % S returned in decreasing order
+rez.remainder2_mode = V(:,2); % S returned in decreasing order
+rez.remainder3_mode = V(:,3); % S returned in decreasing order
+
+
 %% PLOTS
 
 % MODES VIZ
 
-% plot correct trials alone
-plt.title = 'Correct Trials';
-plt.legend = {'Right Hit','Left Hit'};
-plt.conditions = [1,2];
-plt.lw = [2 2];
-plt.smooth = 31;
-plt.colors = {[0 0 1],[1 0 0]};
-plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
-
-% plot correct trials and error trials
-plt.title = 'Correct and Error Trials';
-plt.legend = {'Right Hit','Left Hit','Right Error', 'Left Error'};
-plt.conditions = [1,2,3,4];
-plt.lw = [2.5 2.5 1.5 1.5];
-plt.smooth = 31;
-plt.colors = {[0 0 1],[1 0 0], ...
-                 [0.5 0.5 1],[1 0.5 0.5]};
-plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
+% % plot correct trials alone
+% plt.title = 'Correct Trials';
+% plt.legend = {'Right Hit','Left Hit'};
+% plt.conditions = [1,2];
+% plt.lw = [2 2];
+% plt.smooth = 31;
+% plt.colors = {[0 0 1],[1 0 0]};
+% plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
+% 
+% % plot correct trials and error trials
+% plt.title = 'Correct and Error Trials';
+% plt.legend = {'Right Hit','Left Hit','Right Error', 'Left Error'};
+% plt.conditions = [1,2,3,4];
+% plt.lw = [2.5 2.5 1.5 1.5];
+% plt.smooth = 31;
+% plt.colors = {[0 0 1],[1 0 0], ...
+%                  [0.5 0.5 1],[1 0.5 0.5]};
+% plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 
 % plot correct trials and AW trials
 plt.title = '2AFC and Autowater (Correct) Trials';
 plt.legend = {'Right 2AFC','Left 2AFC','Right AW', 'Left AW'};
 plt.conditions = [1,2,5,6];
-plt.lw = [2.5 2.5 1.5 1.5];
+plt.lw = [2.7 2.7 2.7 2.7];
 plt.smooth = 31;
 plt.colors = {[0 0 1],[1 0 0], ...
-                 [0.2 0.8 0.9],[0.9 0.5 0.2]};
+                 [190, 3, 252]./255,[252, 190, 3]./255};
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 
-% plot correct and ignore trials
-plt.title = 'Correct and Ignore Trials';
-plt.legend = {'Right Hit','Left Hit','Ignore'};
-plt.conditions = [1,2,7];
-plt.lw = [2 2 2];
-plt.smooth = 31;
-plt.colors = {[0 0 1],[1 0 0],[0 0 0]};
-plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
+% % plot correct and ignore trials
+% plt.title = 'Correct and Ignore Trials';
+% plt.legend = {'Right Hit','Left Hit','Ignore'};
+% plt.conditions = [1,2,7];
+% plt.lw = [2 2 2];
+% plt.smooth = 31;
+% plt.colors = {[0 0 1],[1 0 0],[0 0 0]};
+% plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 
 % figure; 
 % psth_jaw = nanmean(obj.trialpsth(:,:,movtrials),3);
