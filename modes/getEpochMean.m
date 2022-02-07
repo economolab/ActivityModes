@@ -1,11 +1,11 @@
-function epochMean = getEpochMean(obj,epochix,trials,meta)
+function epochMean = getEpochMean(obj,epochix,trials,params)
 % slice data by trials and epochix
 % compute the mean during the epoch for each trial, cluster
 nTrials = max(sum(trials.ix));
 nTime = max(diff(epochix'));
-psth = nan(nTime,numel(meta.cluid),nTrials,trials.N); % (time,clu,trials,cond)
-epochMean = nan(numel(meta.cluid),nTrials,trials.N);
-for cluix = 1:numel(meta.cluid) % for each cluster
+psth = nan(nTime,numel(params.cluid),nTrials,trials.N); % (time,clu,trials,cond)
+epochMean = nan(numel(params.cluid),nTrials,trials.N);
+for cluix = 1:numel(params.cluid) % for each cluster
     for cnd = 1:trials.N % for each cond
         cndtrid = find(trials.ix(:,cnd));
         for trix = 1:numel(cndtrid) % for every trial in cnd
