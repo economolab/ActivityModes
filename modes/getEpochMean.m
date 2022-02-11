@@ -3,8 +3,8 @@ function epochMean = getEpochMean(obj,epochix,trials,params)
 % compute the mean during the epoch for each trial, cluster
 nTrials = max(sum(trials.ix));
 nTime = max(diff(epochix'));
-psth = nan(nTime,numel(params.cluid),nTrials,trials.N); % (time,clu,trials,cond)
-epochMean = nan(numel(params.cluid),nTrials,trials.N);
+psth = zeros(nTime,numel(params.cluid),nTrials,trials.N); % (time,clu,trials,cond)
+epochMean = zeros(numel(params.cluid),nTrials,trials.N);
 for cluix = 1:numel(params.cluid) % for each cluster
     for cnd = 1:trials.N % for each cond
         cndtrid = find(trials.ix(:,cnd));
@@ -14,7 +14,7 @@ for cluix = 1:numel(params.cluid) % for each cluster
             e2 = epochix(trid,2);
             
             psth(1:diff(epochix(trid,:))+1,cluix,trix,cnd) = ...
-                obj.trialpsth(e1:e2,cluix,trid);
+                obj.trialdat(e1:e2,cluix,trid);
             
             % calculate the avg firing rate during the epoch for trial
             epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);

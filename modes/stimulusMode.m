@@ -15,6 +15,7 @@ epochMean = getEpochMean(obj,epochix,trials,params);
 
 [mu,sd] = getEpochStats(epochMean,params,trials);
 
+
 % calculate mode according to definition
 stimmode = ((mu(:,1)-mu(:,4)) + (mu(:,3)-mu(:,2)))./ sqrt(sum(sd.^2,2));
 stimmode(isnan(stimmode)) = 0;

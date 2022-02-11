@@ -27,11 +27,7 @@ end
 mask = zeros(obj.bp.Ntrials, numel(conditions));
 
 for i = 1:numel(conditions)
-    try
     mask(:,i) = eval(conditions{i});
-    catch
-        'a'
-    end
     if exist('addToTrialNums','var') == 1
         trialNums{i} = find(mask(:,i)) + addToTrialNums;
     else

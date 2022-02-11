@@ -1,4 +1,4 @@
-function [meta,params,obj] = loadAndProcessData(meta,params)
+function [meta,params,obj] = loadAndProcessDataMultiProbe(meta,params,prbix)
 
 %% LOAD DATA
 
@@ -13,11 +13,6 @@ params.trialid = findTrials(obj, params.condition);
 
 % find clusters to use
 params.cluid = findClusters({obj.clu{params.probe}(:).quality}', params.quality);
-
-% warp spikes post go cue according to median lick duration for each lick
-if params.timeWarp
-    obj = timeWarp(obj,params);
-end
 
 % align spikes in every cluster to an event
 obj = alignSpikes(obj,params);

@@ -44,7 +44,11 @@ end
 % align spikes to params.alignEvent
 for clu = 1:numel(obj.clu{params.probe})
     event = obj.bp.ev.(params.alignEvent)(obj.clu{params.probe}(clu).trial);
-    obj.clu{params.probe}(clu).trialtm_aligned = obj.clu{params.probe}(clu).trialtm - event;
+    if params.timeWarp
+        obj.clu{params.probe}(clu).trialtm_aligned_warped = obj.clu{params.probe}(clu).trialtm_warped - event;
+    else
+        obj.clu{params.probe}(clu).trialtm_aligned = obj.clu{params.probe}(clu).trialtm - event;
+    end
 end
 
 end % alignSpikes

@@ -11,8 +11,12 @@ for i = 1:numel(params.cluid)
     for j = 1:numel(params.condition)
         trix = params.trialid{j};
         spkix = ismember(obj.clu{params.probe}(curClu).trial, trix);
-
-        N = histc(obj.clu{params.probe}(curClu).trialtm_aligned(spkix), edges);
+        
+        if params.timeWarp
+            N = histc(obj.clu{params.probe}(curClu).trialtm_aligned_warped(spkix), edges);
+        else
+            N = histc(obj.clu{params.probe}(curClu).trialtm_aligned(spkix), edges);
+        end
         N = N(1:end-1);
 
         obj.psth(:,i,j) = mySmooth(N./numel(trix)./params.dt, params.smooth);  % trial-averaged separated by trial type
@@ -20,20 +24,24 @@ for i = 1:numel(params.cluid)
 end
 
 % get single trial data
-obj.trialpsth = zeros(numel(obj.time),numel(params.cluid),obj.bp.Ntrials);
+obj.trialdat = zeros(numel(obj.time),numel(params.cluid),obj.bp.Ntrials);
 for i = 1:numel(params.cluid)
     curClu = params.cluid(i);
     for j = 1:obj.bp.Ntrials
                 
         spkix = ismember(obj.clu{params.probe}(curClu).trial, j);
 
-        N = histc(obj.clu{params.probe}(curClu).trialtm_aligned(spkix), edges);
+        if params.timeWarp
+            N = histc(obj.clu{params.probe}(curClu).trialtm_aligned_warped(spkix), edges);
+        else
+            N = histc(obj.clu{params.probe}(curClu).trialtm_aligned(spkix), edges);
+        end
         N = N(1:end-1);
         if size(N,2) > size(N,1)
             N = N'; % make sure N is a column vector
         end
         
-        obj.trialpsth(:,i,j) = mySmooth(N./params.dt,params.smooth);
+        obj.trialdat(:,i,j) = mySmooth(N./params.dt,params.smooth);
 
     end
 end
