@@ -7,12 +7,20 @@ psth = rez.psth;
 datacov = cov([psth(:,:,1) ; psth(:,:,2)]);
 eigsum = sum(eig(datacov));
 
-sample = mode(ev.sample) - mode(ev.(alignEv));
-delay  = mode(ev.delay) - mode(ev.(alignEv));
+if strcmpi(alignEv,'gocue')
+    sample = mode(ev.sample) - mode(ev.(alignEv));
+    delay  = mode(ev.delay) - mode(ev.(alignEv));
+else
+    % if there are lots of no response trials, mode=0
+    % get estimate of best alignment time with median
+    sample = mode(ev.sample) - median(ev.(alignEv));
+    delay  = mode(ev.delay) - median(ev.(alignEv));
+end
 zeroEv  = 0; % corresponds to either gocue or moveonset
 
 % plot each mode
 fig = figure;
+set(fig,'Position',[-1919           1        1920        1007])
 for i = 1:numel(fns)
     subplot(4,3,i);
     hold on
@@ -44,12 +52,14 @@ leg = legend(plt.legend);
 leg.Position = [0.60,0.066,0.28,0.13];
 sgtitle(plt.title)
 
-% h=axes(fig,'visible','off');
-% h.XLabel.Visible='on';
-% h.YLabel.Visible='on';
-% ylabel(h,'Activity (a.u.)');
-% 
-% xlabel(h,['Time (s) from ' alignEv]);
+h=axes(fig,'visible','off');
+h.XLabel.Visible='on';
+h.YLabel.Visible='on';
+ylabel(h,'Activity (a.u.)', 'FontSize', 20);
+
+xlabel(h,['Time (s) from ' alignEv], 'FontSize', 20);
+
+saveas(fig,'firstLick.png')
 
 end % plotAllModes
 
