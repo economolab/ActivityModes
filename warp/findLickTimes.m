@@ -1,4 +1,9 @@
-function [lickStart,lickEnd,lickDur] = findLickTimes(obj,nLicks)
+function [lickStart,lickEnd,lickDur,l_ix] = findLickTimes(obj,nLicks)
+
+% inputs:
+%   obj -> data obj
+%   nLicks -> # of post go cue licks to find times for
+
 
 view = 1; % use side cam
 c = 1; % use x coord
@@ -14,6 +19,11 @@ dt = 1/400;
 % filled in and some that are merged with another, but these errors will
 % likely average out over all trials
 movWindowSize = 0.025 / dt; % num time points to fill discontinuities during a lick
+
+
+l_ix.start = cell(obj.bp.Ntrials, 1);
+l_ix.end = cell(obj.bp.Ntrials, 1);
+l_ix.dur = cell(obj.bp.Ntrials, 1);
 
 lickStart = cell(obj.bp.Ntrials, 1);
 lickEnd = cell(obj.bp.Ntrials, 1); 
@@ -57,6 +67,10 @@ for trix = 1:obj.bp.Ntrials
         ix_start = ix_start(1:nLicks);
         ix_end = ix_end(1:nLicks);
     end
+    
+    l_ix.start{trix} = ix_start;
+    l_ix.end{trix}   = ix_end;
+    l_ix.dur{trix}   = ix_end - ix_start;
     
     lickStart{trix} = ix_start .* dt;
     lickEnd{trix} = ix_end .* dt;

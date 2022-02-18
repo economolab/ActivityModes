@@ -67,7 +67,7 @@ params.probeArea{1} = 'ALM';
 % params.probeArea{end+1} = 'ALM';
 
 params.tmin = -2.5;
-params.tmax = 1.5;
+params.tmax = 2.5;
 params.dt = 1/200;
 
 % smooth with causal gaussian kernel
@@ -80,8 +80,8 @@ params.quality = {'all'}; % accepts any cell array of strings - special characte
 % experiment meta data
 meta.datapth = '/Users/Munib/Documents/Economo-Lab/code/data';
 % meta.datapth = '/Volumes/MUNIB_SSD/Experiments';
-meta.anm = 'JEB7';
-meta.date = '2021-04-29';
+meta.anm = 'JEB7'; % 'JEB7'  'EKH3'
+meta.date = '2021-04-29'; % '2021-04-29'   '2021-08-11
 meta.datafn = findDataFn(meta);
 
 %% LOAD DATA
@@ -101,15 +101,15 @@ rez.alignEvent = params.alignEvent;
 % hit2afc - hitaw during presample period
 % cond{1} = params.condition{end-1}; % hit 2afc
 % cond{2} = params.condition{end}; % hit aw
-rez.context_mode = (obj.presampleFR(:,end-1) - obj.presampleFR(:,end)) ./ sqrt(sum(obj.presampleSigma(:,(end-1):end).^2,2));
-clear cond
+% rez.context_mode = (obj.presampleFR(:,end-1) - obj.presampleFR(:,end)) ./ sqrt(sum(obj.presampleSigma(:,(end-1):end).^2,2));
+% clear cond
 
 %% stimulus mode
 cond{1} = params.modecondition{1};
 cond{2} = params.modecondition{2};
 cond{3} = params.modecondition{3};
 cond{4} = params.modecondition{4};
-epoch = 'sample';
+epoch = 'sample'; 
 rez.stimulus_mode = stimulusMode(obj,params,cond,epoch,rez.alignEvent);
 clear cond
 
@@ -214,13 +214,23 @@ rez.remainder3_mode = V(:,3); % S returned in decreasing order
 % plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 
 % plot correct trials and AW trials
-plt.title = '2AFC and Autowater (Correct) Trials';
+% plt.title used if plt.save=1
+if params.timeWarp && strcmpi(params.alignEvent,'gocue')
+    plt.title = '2AFC-AW (Correct) Trials [Time Warped | Go Cue]';
+elseif params.timeWarp && strcmpi(params.alignEvent,'firstlick')
+    plt.title = '2AFC-AW (Correct) Trials [Time Warped | First Lick]';
+elseif strcmpi(params.alignEvent,'gocue')
+    plt.title = '2AFC-AW (Correct) Trials [Go Cue]';
+elseif strcmpi(params.alignEvent,'firstlick')
+    plt.title = '2AFC-AW (Correct) Trials [First Lick]';
+end
 plt.legend = {'Right 2AFC','Left 2AFC','Right AW', 'Left AW'};
 plt.conditions = [1,2,3,4];
 plt.lw = [2.7 2.7 2.7 2.7];
 plt.smooth = 31;
 plt.colors = {[0 0 1],[1 0 0], ...
                  [190, 3, 252]./255,[252, 190, 3]./255};
+plt.save = 0;
 plotAllModes(rez, obj.bp.ev, params.alignEvent, plt) 
 
 % % plot correct and ignore trials

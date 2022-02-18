@@ -50,16 +50,25 @@ end
 
 leg = legend(plt.legend);
 leg.Position = [0.60,0.066,0.28,0.13];
-sgtitle(plt.title)
+sgtitle(plt.title,'FontSize',30)
 
 h=axes(fig,'visible','off');
 h.XLabel.Visible='on';
 h.YLabel.Visible='on';
-ylabel(h,'Activity (a.u.)', 'FontSize', 20);
+ylabel(h,'Activity (a.u.)', 'FontSize', 30);
 
-xlabel(h,['Time (s) from ' alignEv], 'FontSize', 20);
+xlabel(h,['Time (s) from ' alignEv], 'FontSize', 30);
 
-saveas(fig,'firstLick.png')
+% matlab has an issue when using saveas to save a figure
+% the axis color gets saved as white no matter what. this is the workaround
+% doesn't work if you want no background color, like for an svg
+set(fig,'Color',[1 1 1]); set(fig,'InvertHardCopy','off'); 
+
+% save
+if plt.save
+    savepth = fullfile(pwd,plt.title);
+    saveas(fig,savepth,'png')
+end
 
 end % plotAllModes
 
