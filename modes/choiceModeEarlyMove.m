@@ -4,7 +4,7 @@ function choicemode = choiceModeEarlyMove(objs,meta,cond,epoch,alignEvent,remove
 
 mu = cell(numel(objs),1);
 sd = cell(numel(objs),1);
-for i = 1:numel(objs);
+for i = 1:numel(objs)
     obj = objs{i};
     % which trials to use for each condition used for finding the mode
     trials = getTrialsForModeID(objs{i},cond);
