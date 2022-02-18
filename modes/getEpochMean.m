@@ -20,7 +20,7 @@ for cluix = 1:numel(meta.cluid) % for each cluster
                         obj.trialpsth(e1:e2,cluix,trid);
                     
                     % calculate the avg firing rate during the epoch for trial
-                    epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+                    epochMean(cluix,trix,cnd) = mean(psth(:,cluix,trix,cnd),1,'omitnan');
                 end
             elseif isfield(obj,'earlyMoveTrial')
                  if ~ismember(trid,obj.earlyMoveTrial)
@@ -31,7 +31,7 @@ for cluix = 1:numel(meta.cluid) % for each cluster
                         obj.trialpsth(e1:e2,cluix,trid);
                     
                     % calculate the avg firing rate during the epoch for trial
-                    epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+                    epochMean(cluix,trix,cnd) = mean(psth(:,cluix,trix,cnd),1,'omitnan');
                  end
             else
                 e1 = epochix(trid,1);
@@ -41,7 +41,7 @@ for cluix = 1:numel(meta.cluid) % for each cluster
                     obj.trialpsth(e1:e2,cluix,trid);
                 
                 % calculate the avg firing rate during the epoch for trial
-                epochMean(cluix,trix,cnd) = nanmean(psth(:,cluix,trix,cnd),1);
+                epochMean(cluix,trix,cnd) = mean(psth(:,cluix,trix,cnd),1,'omitnan');
             end
         end
     end

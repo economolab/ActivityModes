@@ -3,7 +3,7 @@ function plotAllModes(rez,ev,alignEv,plt)
 % get field names for each mode
 [fns,~] = patternMatchCellArray(fieldnames(rez),{'mode'},'all');
 
-psth = rez.psth - mean(rez.psth,1);
+psth = rez.psth;  %- mean(rez.psth,1);
 
 sample = mode(ev.sample) - mode(ev.(alignEv));
 delay  = mode(ev.delay) - mode(ev.(alignEv));

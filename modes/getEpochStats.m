@@ -4,8 +4,8 @@ mu = nan(numel(meta.cluid),trials.N);
 sd = nan(size(mu));
 for cluix = 1:numel(meta.cluid) % for each cluster
     for cnd = 1:trials.N
-        mu(cluix,cnd) = nanmean(epochMean(cluix,:,cnd));
-        sd(cluix,cnd) = nanstd(epochMean(cluix,:,cnd));
+        mu(cluix,cnd) = mean(epochMean(cluix,:,cnd),'omitnan');
+        sd(cluix,cnd) = std(epochMean(cluix,:,cnd),'omitnan');
     end
 end
 end % getEpochStats
