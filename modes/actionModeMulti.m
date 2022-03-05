@@ -1,4 +1,4 @@
-function actionmode = actionModeMulti(objs,meta,cond,epoch,alignEvent)
+function actionmode = actionModeMulti(objs,meta,cond,epoch,alignEvent,RemoveEarly)
 % action mode: defined during mvmt init (0.1 to 0.3 s rel to go cue)
 %       (hitR - hitL) / sqrt(sum(sd for each tt ^2));
 
@@ -8,17 +8,21 @@ for i = 1:numel(objs)
     % which trials to use for each condition used for finding the mode
     obj = objs{i};
     trials = getTrialsForModeID(objs{i},cond);
-    if isfield(obj,'earlyMoveix')
-        trials.ix(obj.earlyMoveix,:) = 0;
-    elseif isfield(obj,'earlyMoveTrial')
-        trials.ix(obj.earlyMoveTrial,:) = 0;
+
+    % If early movement trials were identified, exclude them from the
+    % trials used to find the mode
+    if strcmp(RemoveEarly,'yes')
+        trials.ix(objs{i}.earlyMoveix,:) = 0;
     end
     
     % find time in each trial corresponding to epoch
     epochix = nan(objs{i}.bp.Ntrials,2);
     for trix = 1:objs{i}.bp.Ntrials
-        epochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,epoch,trix,alignEvent); % (idx1,idx2)
-        %epochix(trix,:) = findedges(objs{i}.time,objs{i}.bp,meta(i).dt,epoch,trix,alignEvent); % (idx1,idx2)
+        if strcmp(alignEvent,'firstLick')                   % If everything is aligned to the first lick, use the find edges function that accounts for that
+            epochix(trix,:) = findedges_FirstLick(objs{i}.time,objs{i}.bp,epoch,trix,alignEvent); % (idx1,idx2)
+        else                                                % Otherwise, use the normal find edges function
+            epochix(trix,:) = findedges(objs{i}.time,objs{i}.bp,meta(i).dt,epoch,trix,alignEvent); % (idx1,idx2)
+        end
     end
     
     epochMean = getEpochMean(objs{i},epochix,trials,meta(i));
