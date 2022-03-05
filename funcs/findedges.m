@@ -1,4 +1,4 @@
-function edges = findedges(time,bp,dt,epoch,trial,alignEvent)
+function edges = findedges(time,bp,epoch,trial,alignEvent)
     % find histogram bin edges for a specific trial and epoch
     % used to find activity modes / coding vectors when trial and/or epoch
     % lengths differ between trials
