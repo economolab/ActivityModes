@@ -1,4 +1,6 @@
 function plotAllModesEarlyMove(rez,removeEarly,ev,alignEv,plt)
+% Function for plotting all modes calculated with and without early
+% movement trials
 
 % get field names for each mode
 [fns,~] = patternMatchCellArray(fieldnames(rez),{'mode'},'all');
