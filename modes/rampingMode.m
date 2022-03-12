@@ -24,8 +24,8 @@ for trix = 1:obj.bp.Ntrials
     end
 end
 
-sampEpochMean  = getEpochMean(obj,sampepochix,trials,meta);
-delayEpochMean = getEpochMean(obj,delayepochix,trials,meta);
+sampEpochMean  = getEpochMean(obj,sampepochix,trials,meta,RemoveEarly);
+delayEpochMean = getEpochMean(obj,delayepochix,trials,meta,RemoveEarly);
 
 [sampmu,sampsd] = getEpochStats(sampEpochMean,meta,trials);
 [delaymu,delaysd] = getEpochStats(delayEpochMean,meta,trials);

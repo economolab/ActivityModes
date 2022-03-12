@@ -8,7 +8,7 @@ trials = getTrialsForModeID(obj,cond);
 % If early movement trials were identified, exclude them from the
  % trials used to find the mode
  if strcmp(RemoveEarly,'yes')
-     trials.ix(objs.earlyMoveix,:) = 0;
+     trials.ix(obj.earlyMoveix,:) = 0;
  end
 
 
@@ -25,8 +25,8 @@ for trix = 1:obj.bp.Ntrials
     end
 end
 
-postEpochMean  = getEpochMean(obj,postepochix,trials,meta);
-preEpochMean = getEpochMean(obj,preepochix,trials,meta);
+postEpochMean  = getEpochMean(obj,postepochix,trials,meta,RemoveEarly);
+preEpochMean = getEpochMean(obj,preepochix,trials,meta,RemoveEarly);
 
 [postmu,postsd] = getEpochStats(postEpochMean,meta,trials);
 [premu,presd] = getEpochStats(preEpochMean,meta,trials);

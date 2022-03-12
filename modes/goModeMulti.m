@@ -30,8 +30,8 @@ for i = 1:numel(objs)
     end
 
 
-    postEpochMean  = getEpochMean(objs{i},postepochix,trials,meta(i));
-    preEpochMean   = getEpochMean(objs{i},preepochix,trials,meta(i));
+    postEpochMean  = getEpochMean(objs{i},postepochix,trials,meta(i),RemoveEarly);
+    preEpochMean   = getEpochMean(objs{i},preepochix,trials,meta(i),RemoveEarly);
 
     [postmu{i},postsd] = getEpochStats(postEpochMean,meta(i),trials);
     [premu{i},presd]   = getEpochStats(preEpochMean,meta(i),trials);

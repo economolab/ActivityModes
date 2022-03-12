@@ -26,7 +26,7 @@ trials = getTrialsForModeID(obj,cond);
      end
  end
 
-epochMean = getEpochMean(obj,epochix,trials,meta);
+epochMean = getEpochMean(obj,epochix,trials,meta,RemoveEarly);
 
 [mu,sd] = getEpochStats(epochMean,meta,trials);
 

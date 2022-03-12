@@ -24,7 +24,7 @@ for i = 1:numel(objs)
         end
     end
     
-    epochMean = getEpochMean(objs{i},epochix,trials,meta(i));
+    epochMean = getEpochMean(objs{i},epochix,trials,meta(i),RemoveEarly);
     
     [mu{i},sd{i}] = getEpochStats(epochMean,meta(i),trials);
 end

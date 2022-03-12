@@ -27,8 +27,8 @@ for i = 1:numel(objs)
 
     end
     
-    sampEpochMean  = getEpochMean(objs{i},sampepochix,trials,meta(i));
-    delayEpochMean = getEpochMean(objs{i},delayepochix,trials,meta(i));
+    sampEpochMean  = getEpochMean(objs{i},sampepochix,trials,meta(i),RemoveEarly);
+    delayEpochMean = getEpochMean(objs{i},delayepochix,trials,meta(i),RemoveEarly);
     
     [sampmu{i},sampsd]   = getEpochStats(sampEpochMean,meta(i),trials);
     [delaymu{i},delaysd] = getEpochStats(delayEpochMean,meta(i),trials);
