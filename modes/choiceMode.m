@@ -26,7 +26,8 @@ epochMean = getEpochMean(obj,epochix,trials,meta,RemoveEarly);
 [mu,sd] = getEpochStats(epochMean,meta,trials);
 
 % calculate mode according to definition
-choicemode = ((mu(:,1)-mu(:,3)) + (mu(:,4)-mu(:,2)))./ sqrt(sum(sd.^2,2));
+choicemode = (mu(:, 1) - mu(:, 2))./sqrt(sum(sd(:, 1:2).^2, 2));
+% choicemode = ((mu(:,1)-mu(:,3)) + (mu(:,4)-mu(:,2)))./ sqrt(sum(sd.^2,2));
 choicemode(isnan(choicemode)) = 0;
 choicemode = choicemode./sum(abs(choicemode)); % (ncells,1)
 
