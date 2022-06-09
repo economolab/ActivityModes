@@ -9,8 +9,14 @@ function edges = findedges(time,bp,epoch,trial,alignEvent)
         case 'sample'
             e1 = bp.ev.sample(trial);
             e2 = bp.ev.delay(trial) - 0.3;
-        case 'delay'
+        case 'midsample'
+            e1 = bp.ev.delay(trial) - 0.5;
+            e2 = bp.ev.delay(trial) - 0.1;
+        case 'fulldelay'
             e1 = bp.ev.delay(trial);
+            e2 = bp.ev.goCue(trial) - 0.05;
+        case 'latedelay'
+            e1 = bp.ev.goCue(trial) - 0.4;
             e2 = bp.ev.goCue(trial) - 0.05;
         case 'prego'
             e1 = bp.ev.goCue(trial) - 0.1;

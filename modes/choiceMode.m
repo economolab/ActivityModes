@@ -1,14 +1,20 @@
-function choicemode = choiceMode(obj,meta,cond,epoch,alignEvent,RemoveEarly)
+function choicemode = choiceMode(obj,meta,cond,epoch,alignEvent,RemoveShort)
 % 2. choice mode: defined during delay period
 %       ((hitR - missR) + (missL - hitL)) / sqrt(sum(sd for each tt ^2));
 
 % which trials to use for each condition used for finding the mode
 trials = getTrialsForModeID(obj,cond);
 
- % If early movement trials were identified, exclude them from the
- % trials used to find the mode
- if strcmp(RemoveEarly,'yes')
-     trials.ix(obj.earlyMoveix,:) = 0;
+ % Remove trials with delay lengths less than 0.6 from identifying the
+ % choice mode
+ shortix = [];
+ for c = 1:numel(cond)
+     if isfield(meta,'del_trialid')
+        shortix = [shortix;find(meta.del_trialid{c}==1 | meta.del_trialid{c}==2)];
+     end
+ end
+ if strcmp(RemoveShort,'yes')
+     trials.ix(shortix,:) = 0;
  end
 
  % find time in each trial corresponding to epoch
@@ -21,13 +27,14 @@ trials = getTrialsForModeID(obj,cond);
      end
  end
 
-epochMean = getEpochMean(obj,epochix,trials,meta,RemoveEarly);
+epochMean = getEpochMean(obj,epochix,trials,meta,shortix,RemoveShort);
 
 [mu,sd] = getEpochStats(epochMean,meta,trials);
 
 % calculate mode according to definition
-choicemode = (mu(:, 1) - mu(:, 2))./sqrt(sum(sd(:, 1:2).^2, 2));
-% choicemode = ((mu(:,1)-mu(:,3)) + (mu(:,4)-mu(:,2)))./ sqrt(sum(sd.^2,2));
+choicemode = (mu(:, 1) - mu(:, 2))./sqrt(sum(sd(:, 1:2).^2, 2));            % Delay period coding dimension
+% choicemode = ((mu(:,1)-mu(:,3)) + (mu(:,4)-mu(:,2)))./
+% sqrt(sum(sd.^2,2));                                                       % Nuo Li's definition
 choicemode(isnan(choicemode)) = 0;
 choicemode = choicemode./sum(abs(choicemode)); % (ncells,1)
 

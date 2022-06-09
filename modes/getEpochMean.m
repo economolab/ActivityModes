@@ -1,4 +1,4 @@
-function epochMean = getEpochMean(obj,epochix,trials,meta,RemoveEarly)
+function epochMean = getEpochMean(obj,epochix,trials,meta,shortix,RemoveShort)
 % slice data by trials and epochix
 % compute the mean during the epoch for each trial, cluster
 nTrials = max(sum(trials.ix));
@@ -11,8 +11,8 @@ for cluix = 1:numel(meta.cluid) % for each cluster
         for trix = 1:numel(cndtrid)     % for every trial in cnd
             trid = cndtrid(trix);
             
-            if strcmp(RemoveEarly,'yes')        % If you are removing early trials from the mode calculation...
-                if ~ismember(trid,obj.earlyMoveix)      % Only do the following if the current trial is not an early move trial
+            if strcmp(RemoveShort,'yes')        % If you are removing early trials from the mode calculation...
+                if ~ismember(trid,shortix)      % Only do the following if the current trial is not an early move trial
                     e1 = epochix(trid,1);               % Get the index that corresponds to the beginning of the given epoch in curr trial
                     e2 = epochix(trid,2);               % Get the index that corresponds to the end of the given epoch in curr trial
                     
