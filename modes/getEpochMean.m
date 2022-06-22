@@ -11,6 +11,7 @@ for cluix = 1:numel(meta.cluid) % for each cluster
         for trix = 1:numel(cndtrid)     % for every trial in cnd
             trid = cndtrid(trix);
             
+            %disp(cluix); disp(cnd); disp(trix);
             if strcmp(RemoveShort,'yes')        % If you are removing early trials from the mode calculation...
                 if ~ismember(trid,shortix)      % Only do the following if the current trial is not an early move trial
                     e1 = epochix(trid,1);               % Get the index that corresponds to the beginning of the given epoch in curr trial
